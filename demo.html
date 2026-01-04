@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Like/Dislike System Demo - Barter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section h2 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .content-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .content-title {
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .content-author {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .content-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+
+        .reactions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .reaction-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .reaction-icon {
+            font-size: 18px;
+        }
+
+        .reaction-users {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .user-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .user-badge {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .user-badge.dislike {
+            background: #dc3545;
+        }
+
+        .mutual-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        .mutual-card.revenge {
+            border-left-color: #dc3545;
+        }
+
+        .mutual-card.mixed {
+            border-left-color: #ffc107;
+        }
+
+        .mutual-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #212529;
+        }
+
+        .mutual-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .controls {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffc107;
+        }
+
+        .controls h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        select, button {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button.dislike-btn {
+            background: #dc3545;
+        }
+
+        button.dislike-btn:hover {
+            background: #c82333;
+        }
+
+        .timeline-section {
+            grid-column: 1 / -1;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-item.dislike::before {
+            background: #dc3545;
+            box-shadow: 0 0 0 2px #dc3545;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+        .timeline-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-text {
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .timeline-date {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Like/Dislike System Demo</h1>
+        <p class="subtitle">Barter - Accountability & Mutual Interaction Tracking</p>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalContent">0</div>
+                <div class="stat-label">Total Content</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalReactions">0</div>
+                <div class="stat-label">Total Reactions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="mutualLifts">0</div>
+                <div class="stat-label">Mutual Lifts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="mutualRevenges">0</div>
+                <div class="stat-label">Mutual Revenges</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3>Interactive Controls</h3>
+            <div class="control-row">
+                <select id="contentSelect">
+                    <option value="">Select content...</option>
+                </select>
+                <select id="userSelect">
+                    <option value="">Select user...</option>
+                </select>
+                <button onclick="addLike()">Like</button>
+                <button class="dislike-btn" onclick="addDislike()">Dislike</button>
+                <button onclick="removeReaction()">Remove Reaction</button>
+            </div>
+            <div class="control-row">
+                <select id="user1Select">
+                    <option value="">User 1...</option>
+                </select>
+                <span>reactions on</span>
+                <select id="user2Select">
+                    <option value="">User 2...</option>
+                </select>
+                <span>posts</span>
+                <button onclick="showTimeline()">Show Timeline</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>Content Items</h2>
+                <div id="contentList"></div>
+            </div>
+
+            <div class="section">
+                <h2>Mutual Interactions</h2>
+                <div id="mutualInteractions"></div>
+            </div>
+
+            <div class="section timeline-section">
+                <h2>Reaction Timeline</h2>
+                <div id="timelineContainer">
+                    <div class="empty-state">Select two users above to view reaction timeline</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LikeDislikeSystem {
+            constructor() {
+                this.content = new Map();
+            }
+
+            react(contentId, username, reactionType) {
+                const item = this.content.get(contentId);
+                if (!item) throw new Error(`Content item ${contentId} not found`);
+
+                item.reactions = item.reactions.filter(r => r.username !== username);
+                item.reactions.push({
+                    username,
+                    type: reactionType,
+                    timestamp: new Date()
+                });
+            }
+
+            unreact(contentId, username) {
+                const item = this.content.get(contentId);
+                if (!item) throw new Error(`Content item ${contentId} not found`);
+                item.reactions = item.reactions.filter(r => r.username !== username);
+            }
+
+            createContent(id, type, authorUsername) {
+                this.content.set(id, {
+                    id,
+                    type,
+                    authorUsername,
+                    reactions: []
+                });
+            }
+
+            getReactions(contentId) {
+                const item = this.content.get(contentId);
+                return item ? [...item.reactions] : [];
+            }
+
+            getLikes(contentId) {
+                return this.getReactions(contentId)
+                    .filter(r => r.type === 'like')
+                    .map(r => r.username);
+            }
+
+            getDislikes(contentId) {
+                return this.getReactions(contentId)
+                    .filter(r => r.type === 'dislike')
+                    .map(r => r.username);
+            }
+
+            getContentByAuthor(username) {
+                return Array.from(this.content.values())
+                    .filter(item => item.authorUsername === username);
+            }
+
+            getMutualInteraction(user1, user2) {
+                const user1Content = this.getContentByAuthor(user1);
+                const user2Content = this.getContentByAuthor(user2);
+
+                let user2LikesUser1 = 0, user2DislikesUser1 = 0;
+                for (const item of user1Content) {
+                    const reaction = item.reactions.find(r => r.username === user2);
+                    if (reaction) {
+                        reaction.type === 'like' ? user2LikesUser1++ : user2DislikesUser1++;
+                    }
+                }
+
+                let user1LikesUser2 = 0, user1DislikesUser2 = 0;
+                for (const item of user2Content) {
+                    const reaction = item.reactions.find(r => r.username === user1);
+                    if (reaction) {
+                        reaction.type === 'like' ? user1LikesUser2++ : user1DislikesUser2++;
+                    }
+                }
+
+                const mutualLikes = user1LikesUser2 > 0 && user2LikesUser1 > 0;
+                const mutualDislikes = user1DislikesUser2 > 0 && user2DislikesUser1 > 0;
+
+                let type;
+                if (mutualLikes && !mutualDislikes) type = 'mutual-lift';
+                else if (mutualDislikes && !mutualLikes) type = 'mutual-revenge';
+                else type = 'mixed';
+
+                return {
+                    user1, user2, type,
+                    user1LikesUser2Count: user1LikesUser2,
+                    user2LikesUser1Count: user2LikesUser1,
+                    user1DislikesUser2Count: user1DislikesUser2,
+                    user2DislikesUser1Count: user2DislikesUser1
+                };
+            }
+
+            findMutualLifts(username) {
+                const allAuthors = new Set(Array.from(this.content.values()).map(item => item.authorUsername));
+                const lifts = [];
+                for (const other of allAuthors) {
+                    if (other !== username) {
+                        const interaction = this.getMutualInteraction(username, other);
+                        if (interaction.type === 'mutual-lift') lifts.push(other);
+                    }
+                }
+                return lifts;
+            }
+
+            findMutualRevenges(username) {
+                const allAuthors = new Set(Array.from(this.content.values()).map(item => item.authorUsername));
+                const revenges = [];
+                for (const other of allAuthors) {
+                    if (other !== username) {
+                        const interaction = this.getMutualInteraction(username, other);
+                        if (interaction.type === 'mutual-revenge') revenges.push(other);
+                    }
+                }
+                return revenges;
+            }
+
+            getReactionTimeline(reactorUsername, authorUsername) {
+                const authorContent = this.getContentByAuthor(authorUsername);
+                const timeline = [];
+
+                for (const item of authorContent) {
+                    const reaction = item.reactions.find(r => r.username === reactorUsername);
+                    if (reaction) {
+                        timeline.push({
+                            contentId: item.id,
+                            contentType: item.type,
+                            reactionType: reaction.type,
+                            timestamp: reaction.timestamp
+                        });
+                    }
+                }
+
+                return timeline.sort((a, b) => a.timestamp - b.timestamp);
+            }
+
+            getAllContent() {
+                return Array.from(this.content.values());
+            }
+
+            getAllUsers() {
+                const users = new Set();
+                for (const item of this.content.values()) {
+                    users.add(item.authorUsername);
+                    item.reactions.forEach(r => users.add(r.username));
+                }
+                return Array.from(users);
+            }
+        }
+
+        const system = new LikeDislikeSystem();
+
+        function initializeDemoData() {
+            const users = ['alice', 'bob', 'charlie', 'diana', 'eve'];
+            const contentTypes = ['thread', 'resource', 'post', 'comment'];
+
+            const now = new Date();
+
+            system.createContent('thread-1', 'thread', 'alice');
+            system.createContent('thread-2', 'thread', 'bob');
+            system.createContent('thread-3', 'thread', 'charlie');
+            system.createContent('resource-1', 'resource', 'alice');
+            system.createContent('resource-2', 'resource', 'bob');
+            system.createContent('post-1', 'post', 'diana');
+            system.createContent('post-2', 'post', 'alice');
+            system.createContent('comment-1', 'comment', 'eve');
+
+            setTimeout(() => system.react('thread-1', 'bob', 'like'), 0);
+            setTimeout(() => system.react('thread-2', 'alice', 'like'), 100);
+            setTimeout(() => system.react('resource-1', 'bob', 'like'), 200);
+            setTimeout(() => system.react('resource-2', 'alice', 'like'), 300);
+            setTimeout(() => system.react('post-2', 'bob', 'like'), 400);
+
+            setTimeout(() => system.react('thread-1', 'charlie', 'dislike'), 500);
+            setTimeout(() => system.react('thread-3', 'alice', 'dislike'), 600);
+            setTimeout(() => system.react('thread-3', 'bob', 'dislike'), 700);
+
+            setTimeout(() => system.react('thread-2', 'charlie', 'like'), 800);
+            setTimeout(() => system.react('post-1', 'alice', 'like'), 900);
+            setTimeout(() => system.react('post-1', 'bob', 'like'), 1000);
+            setTimeout(() => system.react('comment-1', 'alice', 'like'), 1100);
+
+            setTimeout(() => system.react('resource-1', 'diana', 'like'), 1200);
+            setTimeout(() => system.react('thread-1', 'eve', 'like'), 1300);
+
+            setTimeout(render, 1500);
+        }
+
+        function render() {
+            renderContent();
+            renderMutualInteractions();
+            updateStats();
+            updateSelects();
+        }
+
+        function renderContent() {
+            const container = document.getElementById('contentList');
+            const content = system.getAllContent();
+
+            container.innerHTML = content.map(item => {
+                const likes = system.getLikes(item.id);
+                const dislikes = system.getDislikes(item.id);
+
+                return `
+                    <div class="content-item">
+                        <div class="content-header">
+                            <div>
+                                <div class="content-title">${item.id}</div>
+                                <div class="content-author">by @${item.authorUsername}</div>
+                            </div>
+                            <span class="content-type">${item.type}</span>
+                        </div>
+                        <div class="reactions">
+                            <div class="reaction-group">
+                                <span class="reaction-icon">👍</span>
+                                <span>${likes.length}</span>
+                                ${likes.length > 0 ? `
+                                    <div class="user-list">
+                                        ${likes.map(u => `<span class="user-badge">${u}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="reaction-group">
+                                <span class="reaction-icon">👎</span>
+                                <span>${dislikes.length}</span>
+                                ${dislikes.length > 0 ? `
+                                    <div class="user-list">
+                                        ${dislikes.map(u => `<span class="user-badge dislike">${u}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMutualInteractions() {
+            const container = document.getElementById('mutualInteractions');
+            const users = system.getAllUsers();
+            const interactions = [];
+
+            for (let i = 0; i < users.length; i++) {
+                for (let j = i + 1; j < users.length; j++) {
+                    const interaction = system.getMutualInteraction(users[i], users[j]);
+                    if (interaction.type !== 'mixed' ||
+                        (interaction.user1LikesUser2Count + interaction.user1DislikesUser2Count +
+                         interaction.user2LikesUser1Count + interaction.user2DislikesUser1Count) > 0) {
+                        interactions.push(interaction);
+                    }
+                }
+            }
+
+            if (interactions.length === 0) {
+                container.innerHTML = '<div class="empty-state">No mutual interactions yet</div>';
+                return;
+            }
+
+            container.innerHTML = interactions.map(int => `
+                <div class="mutual-card ${int.type === 'mutual-lift' ? 'lift' : int.type === 'mutual-revenge' ? 'revenge' : 'mixed'}">
+                    <div class="mutual-header">
+                        ${int.user1} ↔ ${int.user2}
+                        ${int.type === 'mutual-lift' ? '💚 Mutual Lift' : int.type === 'mutual-revenge' ? '💔 Mutual Revenge' : '⚡ Mixed'}
+                    </div>
+                    <div class="mutual-stats">
+                        <div>👍 ${int.user1} → ${int.user2}: ${int.user1LikesUser2Count}</div>
+                        <div>👍 ${int.user2} → ${int.user1}: ${int.user2LikesUser1Count}</div>
+                        <div>👎 ${int.user1} → ${int.user2}: ${int.user1DislikesUser2Count}</div>
+                        <div>👎 ${int.user2} → ${int.user1}: ${int.user2DislikesUser1Count}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const content = system.getAllContent();
+            const totalReactions = content.reduce((sum, item) => sum + item.reactions.length, 0);
+            const users = system.getAllUsers();
+
+            let lifts = 0, revenges = 0;
+            const counted = new Set();
+
+            for (const user of users) {
+                const userLifts = system.findMutualLifts(user);
+                const userRevenges = system.findMutualRevenges(user);
+
+                userLifts.forEach(other => {
+                    const key = [user, other].sort().join('-');
+                    if (!counted.has(key)) {
+                        lifts++;
+                        counted.add(key);
+                    }
+                });
+
+                userRevenges.forEach(other => {
+                    const key = [user, other].sort().join('-');
+                    if (!counted.has(key)) {
+                        revenges++;
+                        counted.add(key);
+                    }
+                });
+            }
+
+            document.getElementById('totalContent').textContent = content.length;
+            document.getElementById('totalReactions').textContent = totalReactions;
+            document.getElementById('mutualLifts').textContent = lifts;
+            document.getElementById('mutualRevenges').textContent = revenges;
+        }
+
+        function updateSelects() {
+            const content = system.getAllContent();
+            const users = system.getAllUsers();
+
+            const contentSelect = document.getElementById('contentSelect');
+            contentSelect.innerHTML = '<option value="">Select content...</option>' +
+                content.map(item => `<option value="${item.id}">${item.id} (by ${item.authorUsername})</option>`).join('');
+
+            const userSelects = ['userSelect', 'user1Select', 'user2Select'];
+            userSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">Select user...</option>' +
+                    users.map(user => `<option value="${user}">${user}</option>`).join('');
+            });
+        }
+
+        function addLike() {
+            const contentId = document.getElementById('contentSelect').value;
+            const username = document.getElementById('userSelect').value;
+
+            if (!contentId || !username) {
+                alert('Please select both content and user');
+                return;
+            }
+
+            system.react(contentId, username, 'like');
+            render();
+        }
+
+        function addDislike() {
+            const contentId = document.getElementById('contentSelect').value;
+            const username = document.getElementById('userSelect').value;
+
+            if (!contentId || !username) {
+                alert('Please select both content and user');
+                return;
+            }
+
+            system.react(contentId, username, 'dislike');
+            render();
+        }
+
+        function removeReaction() {
+            const contentId = document.getElementById('contentSelect').value;
+            const username = document.getElementById('userSelect').value;
+
+            if (!contentId || !username) {
+                alert('Please select both content and user');
+                return;
+            }
+
+            system.unreact(contentId, username);
+            render();
+        }
+
+        function showTimeline() {
+            const user1 = document.getElementById('user1Select').value;
+            const user2 = document.getElementById('user2Select').value;
+
+            if (!user1 || !user2) {
+                alert('Please select both users');
+                return;
+            }
+
+            const timeline = system.getReactionTimeline(user1, user2);
+            const container = document.getElementById('timelineContainer');
+
+            if (timeline.length === 0) {
+                container.innerHTML = `<div class="empty-state">${user1} has not reacted to any of ${user2}'s posts yet</div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <h3 style="margin-bottom: 15px; color: #495057;">@${user1}'s reactions on @${user2}'s posts</h3>
+                <div class="timeline">
+                    ${timeline.map(item => `
+                        <div class="timeline-item ${item.reactionType}">
+                            <div class="timeline-content">
+                                <div class="timeline-text">
+                                    ${item.reactionType === 'like' ? '👍 Liked' : '👎 Disliked'}
+                                    <strong>${item.contentId}</strong>
+                                    (${item.contentType})
+                                </div>
+                                <div class="timeline-date">
+                                    ${item.timestamp.toLocaleTimeString()}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        initializeDemoData();
+    </script>
+</body>
+</html>
