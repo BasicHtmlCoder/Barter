@@ -314,12 +314,189 @@
             font-size: 14px;
             opacity: 0.9;
         }
+
+        .use-cases {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+        }
+
+        .use-cases h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .use-case-category {
+            margin-bottom: 25px;
+        }
+
+        .use-case-category h3 {
+            color: #495057;
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .use-case-category h3::before {
+            content: '▸';
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .use-case-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #667eea;
+        }
+
+        .use-case-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 5px;
+        }
+
+        .use-case-description {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .use-case-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .use-case-list li {
+            padding: 8px 0 8px 20px;
+            position: relative;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .use-case-list li::before {
+            content: '•';
+            position: absolute;
+            left: 5px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .toggle-button {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+
+        .toggle-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .use-cases-content {
+            display: none;
+        }
+
+        .use-cases-content.expanded {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Like/Dislike System Demo</h1>
         <p class="subtitle">Barter - Accountability & Mutual Interaction Tracking</p>
+
+        <div class="use-cases">
+            <button class="toggle-button" onclick="toggleUseCases()">Show Practical Use Cases</button>
+            <div class="use-cases-content" id="useCasesContent">
+                <h2>Practical Applications</h2>
+
+                <div class="use-case-category">
+                    <h3>Social Platforms & Communities</h3>
+                    <div class="use-case-item">
+                        <div class="use-case-title">Forum/Discussion Boards (Reddit, Stack Overflow)</div>
+                        <ul class="use-case-list">
+                            <li>Track engagement on threads, comments, and resources</li>
+                            <li>Identify helpful vs. unhelpful content</li>
+                            <li>Detect voting brigades or coordinated behavior</li>
+                        </ul>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="use-case-title">Content Platforms (Medium, Dev.to)</div>
+                        <ul class="use-case-list">
+                            <li>Gauge article/tutorial quality through reader feedback</li>
+                            <li>Surface popular content in recommendation algorithms</li>
+                            <li>Track author reputation based on consistent positive reactions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="use-case-category">
+                    <h3>Moderation & Trust Systems</h3>
+                    <div class="use-case-item">
+                        <div class="use-case-title">Gaming/Collusion Detection</div>
+                        <ul class="use-case-list">
+                            <li>Identify "mutual-lift" patterns (users systematically upvoting each other)</li>
+                            <li>Detect "mutual-revenge" patterns (coordinated downvoting campaigns)</li>
+                            <li>Flag suspicious behavior for moderator review</li>
+                        </ul>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="use-case-title">Reputation Systems</div>
+                        <ul class="use-case-list">
+                            <li>Weight reactions based on historical interaction patterns</li>
+                            <li>Discount votes from users with mutual-lift relationships</li>
+                            <li>Build trust scores that account for organic vs. coordinated engagement</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="use-case-category">
+                    <h3>Analytics & Insights</h3>
+                    <div class="use-case-item">
+                        <div class="use-case-title">User Relationship Mapping</div>
+                        <ul class="use-case-list">
+                            <li>Visualize interaction networks between users</li>
+                            <li>Identify communities or cliques based on mutual reactions</li>
+                            <li>Detect feuds or conflicts through revenge patterns</li>
+                        </ul>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="use-case-title">Content Quality Metrics</div>
+                        <ul class="use-case-list">
+                            <li>Differentiate between genuinely popular content vs. artificially boosted</li>
+                            <li>Track how users interact with different content types (threads, resources, comments, posts)</li>
+                            <li>Analyze reaction timelines to understand sentiment changes over time</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="use-case-category">
+                    <h3>Recommendation Engines</h3>
+                    <div class="use-case-item">
+                        <ul class="use-case-list">
+                            <li>Avoid recommending content from users in "mutual-revenge" relationships</li>
+                            <li>Promote diverse perspectives by detecting echo chambers</li>
+                            <li>Suggest connections between users with positive but non-mutual interactions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="stats-grid" id="statsGrid">
             <div class="stat-card">
@@ -785,6 +962,19 @@
                     `).join('')}
                 </div>
             `;
+        }
+
+        function toggleUseCases() {
+            const content = document.getElementById('useCasesContent');
+            const button = event.target;
+
+            content.classList.toggle('expanded');
+
+            if (content.classList.contains('expanded')) {
+                button.textContent = 'Hide Practical Use Cases';
+            } else {
+                button.textContent = 'Show Practical Use Cases';
+            }
         }
 
         initializeDemoData();
